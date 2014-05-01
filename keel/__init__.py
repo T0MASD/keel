@@ -2,7 +2,6 @@ from pyramid.config import Configurator
 from pyramid.session import SignedCookieSessionFactory
 from pyramid.authentication import SessionAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
-
 from pyramid.security import ALL_PERMISSIONS, Allow, Authenticated
 
 

@@ -2,13 +2,14 @@ from pyramid.security import remember, forget
 from pyramid.view import view_config
 from pyramid.session import check_csrf_token
 
+
 @view_config(route_name='login', renderer='json')
 def login(request):
     """ login view """
     username = 'manageruser'
     headers = remember(request, username)
-    csrf_token = request.session.new_csrf_token()
     request.response.headerlist.extend(headers)
+    csrf_token = request.session.new_csrf_token()
     return {'status':'Logged in %s' % username,
             'csrf_token':csrf_token}
 
