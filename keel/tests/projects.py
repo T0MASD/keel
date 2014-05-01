@@ -11,7 +11,7 @@ class ViewTests(unittest.TestCase):
         testing.tearDown()
 
     def test_my_view(self):
-        from .views import my_view
+        from ..views.projects import get_projects
         request = testing.DummyRequest()
-        info = my_view(request)
-        self.assertEqual(info['project'], 'keel')
+        projects = get_projects(request)
+        self.assertEqual(projects, {'projects': ['Project 1', 'Project 2', 'Project 3']})

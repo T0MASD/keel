@@ -12,6 +12,7 @@ requires = [
     'pyramid',
     'pyramid_debugtoolbar',
     'waitress',
+    'cornice',
     ]
 
 setup(name='keel',
