@@ -10,11 +10,11 @@ def login(request):
     headers = remember(request, username)
     request.response.headerlist.extend(headers)
     csrf_token = request.session.new_csrf_token()
-    return {'status':'Logged in %s' % username,
+    return {'username':username,
             'csrf_token':csrf_token}
 
 
-@view_config(route_name='logout', renderer='json')
+@view_config(route_name='logout', permission="authenticated", renderer='json')
 def logout(request):
     """ logout view """
     username = request.authenticated_userid

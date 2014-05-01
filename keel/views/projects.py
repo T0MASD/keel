@@ -8,7 +8,7 @@ def valid_token(request):
     check_csrf_token(request)
 
 
-@projects.get(permission="query", validators=valid_token)
+@projects.get(permission="authenticated", validators=valid_token)
 def get_projects(request):
     data = {}
     data['projects'] = ['Project 1', 'Project 2', 'Project 3']

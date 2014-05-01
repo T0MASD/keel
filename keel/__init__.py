@@ -7,7 +7,7 @@ from pyramid.security import ALL_PERMISSIONS, Allow, Authenticated
 
 class Root(object):
     __acl__ = [
-        (Allow, Authenticated, 'query'),
+        (Allow, Authenticated, 'authenticated'),
         (Allow, 'g:manager', 'edit'),
         (Allow, 'g:admin', ALL_PERMISSIONS),
     ]
