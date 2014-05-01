@@ -30,7 +30,7 @@ def main(global_config, **settings):
     """ This function returns a Pyramid WSGI application.
     """
     my_session_factory = SignedCookieSessionFactory('itsaseekreet')
-    my_authentication_policy = SessionAuthenticationPolicy(callback=groupfinder, debug=True)
+    my_authentication_policy = SessionAuthenticationPolicy(callback=groupfinder, debug=False)
     my_authorization_policy = ACLAuthorizationPolicy()
     
     config = Configurator(settings=settings)
