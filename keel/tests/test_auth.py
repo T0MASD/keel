@@ -46,7 +46,14 @@ class IntegrationTests(unittest.TestCase):
 
 
     def test_logout_view(self):
-        # do a login
+        # run login to start session
         self.app.get('/login')
         response = self.app.get('/logout')
         self.assertEqual(response.status_int, 200)
+
+
+    def test_logout_not_loggedin(self):
+        # expect 403 when trying to log out again
+        from pyramid.httpexceptions import HTTPForbidden
+        response = self.app.get('/logout', expect_errors=True)
+        self.assertEqual(response.status_int, 403)
