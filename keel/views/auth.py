@@ -14,7 +14,7 @@ def login(request):
             'csrf_token':csrf_token}
 
 
-@view_config(route_name='logout', permission="authenticated", renderer='json')
+@view_config(route_name='logout', permission='authenticated', renderer='json')
 def logout(request):
     """ logout view """
     username = request.authenticated_userid
@@ -26,10 +26,10 @@ def logout(request):
 @view_config(route_name='auth', renderer='string')
 def auth(request):
     """ auth debug view """
-    print "expecting csrf_token", request.session.get_csrf_token()
+    print 'expecting csrf_token', request.session.get_csrf_token()
     check_csrf_token(request)
     print request.authenticated_userid
     print request.effective_principals
     token = request.session.new_csrf_token()
-    print "setting new csrf_token", token
+    print 'setting new csrf_token', token
     return 'See console'

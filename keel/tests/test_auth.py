@@ -1,7 +1,5 @@
 import unittest
-from webtest import TestApp
 from pyramid import testing
-from pyramid.paster import get_app
 
 class UnitTests(unittest.TestCase):
     def setUp(self):
@@ -22,14 +20,18 @@ class UnitTests(unittest.TestCase):
 
     def test_logout_view(self):
         from ..views.auth import logout
+        userid = 'hank'
+        self.config.testing_securitypolicy(userid=userid)
         request = testing.DummyRequest()
         response = logout(request)
-        self.assertEqual(response, {'status': 'Logged out None'})        
+        self.assertEqual(response, {'status': 'Logged out %s' % userid})
+        
 
 
 class IntegrationTests(unittest.TestCase):
     def setUp(self):
-        #self.config = testing.setUp()
+        from webtest import TestApp
+        from pyramid.paster import get_app
         app = get_app('development.ini')
         self.app = TestApp(app)
 
@@ -43,7 +45,8 @@ class IntegrationTests(unittest.TestCase):
         self.assertEqual(response.status_int, 200)
 
 
-    # def test_logout_view(self):
-    #     response = self.app.get('/logout')
-        # Needs to be logged in
-        #self.assertEqual(response.status_int, 200)
+    def test_logout_view(self):
+        # do a login
+        self.app.get('/login')
+        response = self.app.get('/logout')
+        self.assertEqual(response.status_int, 200)

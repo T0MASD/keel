@@ -1,15 +1,15 @@
 import unittest
-from webtest import TestApp
 from pyramid import testing
-from pyramid.paster import get_app
 
 
 class ViewTests(unittest.TestCase):
     def setUp(self):
         self.config = testing.setUp()
 
+
     def tearDown(self):
         testing.tearDown()
+
 
     def test_get_projects_view(self):
         from ..views.projects import get_projects
@@ -20,7 +20,8 @@ class ViewTests(unittest.TestCase):
 
 class IntegrationTests(unittest.TestCase):
     def setUp(self):
-        #self.config = testing.setUp()
+        from webtest import TestApp
+        from pyramid.paster import get_app
         app = get_app('development.ini')
         self.app = TestApp(app)
 
@@ -29,7 +30,9 @@ class IntegrationTests(unittest.TestCase):
         testing.tearDown()
 
 
-    # def test_projects_view(self):
-    #     response = self.app.get('/projects')
-        # Needs to be logged in and have valid token
-        #self.assertEqual(response.status_int, 200)
+    def test_projects_view(self):
+        # run login to start session
+        login = self.app.get('/login')
+        csrf_token = login.json_body['csrf_token']
+        response = self.app.get('/projects?csrf_token=%s' % csrf_token)
+        self.assertEqual(response.status_int, 200)
