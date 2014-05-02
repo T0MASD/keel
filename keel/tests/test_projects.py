@@ -36,3 +36,15 @@ class IntegrationTests(unittest.TestCase):
         csrf_token = login.json_body['csrf_token']
         response = self.app.get('/projects?csrf_token=%s' % csrf_token)
         self.assertEqual(response.status_int, 200)
+
+
+    def test_projects_not_loggedin(self):
+        response = self.app.get('/projects', expect_errors=True)
+        self.assertEqual(response.status_int, 403)
+
+
+    def test_projects_no_csrf_token(self):
+        # run login to start session
+        login = self.app.get('/login')
+        response = self.app.get('/projects', expect_errors=True)
+        self.assertEqual(response.status_int, 400)
