@@ -25,7 +25,13 @@ class UnitTests(unittest.TestCase):
         request = testing.DummyRequest()
         response = logout(request)
         self.assertEqual(response, {'status': 'Logged out %s' % userid})
-        
+
+
+    def test_auth_view(self):
+        from ..views.auth import auth
+        request = testing.DummyRequest()
+        response = auth(request)
+        self.assertEqual(response, 'See console')
 
 
 class IntegrationTests(unittest.TestCase):
