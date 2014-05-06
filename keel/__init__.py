@@ -67,7 +67,8 @@ def main(global_config, **settings):
     conn = MongoDB(db_uri)
     config.registry.settings['mongodb_conn'] = conn
     config.add_subscriber(add_mongo_db, NewRequest)
-
+    
+    # override default json renderer
     config.add_renderer('json', MongoJSONRenderer) 
 
     config.add_route('login', '/login')
