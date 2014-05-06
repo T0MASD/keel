@@ -33,7 +33,7 @@ class IntegrationTests(unittest.TestCase):
     def test_projects_view(self):
         # run login to start session
         login = self.app.get('/login')
-        csrf_token = login.json_body['csrf_token']
+        csrf_token = login.headers['X-CSRF-Token']
         response = self.app.get('/projects?csrf_token=%s' % csrf_token)
         self.assertEqual(response.status_int, 200)
 

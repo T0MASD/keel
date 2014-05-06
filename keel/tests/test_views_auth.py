@@ -15,7 +15,6 @@ class UnitTests(unittest.TestCase):
         request = testing.DummyRequest()
         response = login(request)
         self.assertEqual(response['username'], 'manageruser')
-        self.assertEqual(len(response['csrf_token']), len('0123456789012345678901234567890123456789'))
 
 
     def test_logout_view(self):

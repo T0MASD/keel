@@ -2,18 +2,7 @@ from pyramid.config import Configurator
 from pyramid.session import SignedCookieSessionFactory
 from pyramid.authentication import SessionAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
-from pyramid.security import ALL_PERMISSIONS, Allow, Authenticated
-
-
-class Root(object):
-    __acl__ = [
-        (Allow, Authenticated, 'authenticated'),
-        (Allow, 'g:manager', 'edit'),
-        (Allow, 'g:admin', ALL_PERMISSIONS),
-    ]
-
-    def __init__(self, request):
-        self.request = request
+from resources import Root
 
 
 def groupfinder(username, request):
@@ -23,6 +12,39 @@ def groupfinder(username, request):
     if username == 'manageruser':
         groups.append('manager')
     return ['g:%s' % g for g in groups]
+
+
+import pymongo
+from pyramid.events import NewRequest
+
+def add_mongo_db(event):
+    settings = event.request.registry.settings
+    url = settings['mongodb.url']
+    db_name = settings['mongodb.db_name']
+    db_username = settings['mongodb.db_username']
+    db_password = settings['mongodb.db_password']
+    db = settings['mongodb_conn'][db_name]
+    event.request.db = db
+
+
+from pyramid.renderers import JSON
+from bson import json_util
+import json
+
+class MongoJSONRenderer:
+    def __init__(self, info):
+        pass
+
+    def __call__(self, value, system):
+        request = system.get('request')
+        if request is not None:
+            # set response type to json
+            request.response.content_type = 'application/json; charset=UTF-8'
+            # set csrf token if user is logged in
+            if not 'X-CSRF-Token' in request.response.headers and 'system.Authenticated' in request.effective_principals:
+                request.response.headers['X-CSRF-Token'] = request.session.new_csrf_token().encode('utf-8')
+        return json.dumps(value, default=json_util.default)
+
 
 
 def main(global_config, **settings):
@@ -36,6 +58,15 @@ def main(global_config, **settings):
     config.set_session_factory(my_session_factory)
     config.set_authentication_policy(my_authentication_policy)
     config.set_authorization_policy(my_authorization_policy)
+
+    # MongoDB
+    db_uri = settings['mongodb.url']
+    MongoDB = pymongo.Connection
+    conn = MongoDB(db_uri)
+    config.registry.settings['mongodb_conn'] = conn
+    config.add_subscriber(add_mongo_db, NewRequest)
+
+    config.add_renderer('json', MongoJSONRenderer) 
 
     config.include('cornice')
     config.add_route('login', '/login')
