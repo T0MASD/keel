@@ -26,13 +26,10 @@ class MongoCollection(Resource):
         return request.db[self.collection_name]
 
     def retrieve(self):
-        for i in self.collection.find():
-            print i
         return [elem for elem in self.collection.find()]
 
     def create(self, document):
         object_id = self.collection.insert(document)
-        
         return self.resource_name(ref=str(object_id), parent=self)
 
 

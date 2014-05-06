@@ -4,10 +4,6 @@ from pyramid.authentication import SessionAuthenticationPolicy
 from pyramid.authorization import ACLAuthorizationPolicy
 from resources import Root
 
-import pymongo
-from pyramid.events import NewRequest
-
-
 
 def groupfinder(username, request):
     groups = []
@@ -17,6 +13,9 @@ def groupfinder(username, request):
         groups.append('manager')
     return ['g:%s' % g for g in groups]
 
+
+import pymongo
+from pyramid.events import NewRequest
 
 def add_mongo_db(event):
     settings = event.request.registry.settings
@@ -34,6 +33,23 @@ def add_mongo_db(event):
         db_password = settings['mongodb.db_password']
     db = settings['mongodb_conn'][db_name]
     event.request.db = db
+
+
+from pyramid.renderers import JSON
+from bson import json_util
+import json
+
+class MongoJSONRenderer:
+    def __init__(self, info):
+        pass
+
+    def __call__(self, value, system):
+        request = system.get('request')
+        if request is not None:
+            if not hasattr(request, 'response_content_type'):
+                request.response_content_type = 'application/json'
+        return json.dumps(value, default=json_util.default)
+
 
 
 def main(global_config, **settings):
@@ -54,6 +70,8 @@ def main(global_config, **settings):
     conn = MongoDB(db_uri)
     config.registry.settings['mongodb_conn'] = conn
     config.add_subscriber(add_mongo_db, NewRequest)
+
+    config.add_renderer('json', MongoJSONRenderer) 
 
     config.include('cornice')
     config.add_route('login', '/login')
