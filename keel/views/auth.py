@@ -26,7 +26,7 @@ def logout(request):
     return {'status':'Logged out %s' % username}
 
 
-@view_config(route_name='auth', renderer='string', check_csrf=True)
+@view_config(route_name='auth', renderer='string')
 def auth(request):
     """ auth debug view """
     print 'expecting csrf_token', request.session.get_csrf_token()
