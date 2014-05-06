@@ -38,8 +38,11 @@ class MongoJSONRenderer:
     def __call__(self, value, system):
         request = system.get('request')
         if request is not None:
-            if not hasattr(request, 'response_content_type'):
-                request.response.content_type = 'application/json'
+            if not hasattr(request, 'response.content_type'):
+                request.response.content_type = 'application/json; charset=UTF-8'
+            # set csrf token
+            if not 'X-CSRF-Token' in request.response.headers:
+                request.response.headers['X-CSRF-Token'] = request.session.new_csrf_token().encode('utf-8')
         return json.dumps(value, default=json_util.default)
 
 

@@ -9,10 +9,10 @@ def login(request):
     username = 'manageruser'
     headers = remember(request, username)
     request.response.headerlist.extend(headers)
-    csrf_token = request.session.new_csrf_token()
+    request.response.headers['X-CSRF-Token'] = request.session.new_csrf_token().encode('utf-8')
+    csrf_token = request.response.headers['X-CSRF-Token']
     return {'username':username,
             'csrf_token':csrf_token}
-
 
 @view_config(route_name='logout', permission='authenticated', renderer='json')
 def logout(request):
