@@ -43,6 +43,8 @@ class MongoJSONRenderer:
             # set csrf token if user is logged in
             if not 'X-CSRF-Token' in request.response.headers and 'system.Authenticated' in request.effective_principals:
                 request.response.headers['X-CSRF-Token'] = request.session.new_csrf_token().encode('utf-8')
+            # Add Access-Control-Allow-Origin from everything
+            request.response.headers['Access-Control-Allow-Origin'] = '*'
         return json.dumps(value, default=json_util.default)
 
 
