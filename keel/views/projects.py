@@ -6,8 +6,11 @@ from pyramid.view import view_config
 @view_config(context=Projects, request_method='GET', renderer='json')
 def list_projects(context, request):
     r = context.retrieve()
-    print r
-    return r
+
+    if r is None:
+        raise HTTPNotFound()
+    else:
+        return r
 
 
 @view_config(request_method='POST', context=Projects, renderer='json')
