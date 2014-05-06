@@ -20,17 +20,9 @@ from pyramid.events import NewRequest
 def add_mongo_db(event):
     settings = event.request.registry.settings
     url = settings['mongodb.url']
-    if 'mongodb.conf' in settings:
-        import ConfigParser
-        config = ConfigParser.ConfigParser()
-        config.readfp(open(settings['mongodb.conf']))
-        db_name = config.get('mongodb','db_name')
-        db_username = config.get('mongodb','db_username')
-        db_password = config.get('mongodb','db_password')
-    else:
-        db_name = settings['mongodb.db_name']
-        db_username = settings['mongodb.db_username']
-        db_password = settings['mongodb.db_password']
+    db_name = settings['mongodb.db_name']
+    db_username = settings['mongodb.db_username']
+    db_password = settings['mongodb.db_password']
     db = settings['mongodb_conn'][db_name]
     event.request.db = db
 
