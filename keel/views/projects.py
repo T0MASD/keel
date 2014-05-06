@@ -1,15 +1,27 @@
-from cornice import Service
-from pyramid.session import check_csrf_token
-
-projects = Service(name='projects', path='/projects', description='Get projects')
-
-def valid_token(request):
-    """ checks for a GET or POST parameter named csrf_token or a header named X-CSRF-Token. """
-    check_csrf_token(request)
+from keel.resources import Projects, Project
+from pyramid.view import view_config
 
 
-@projects.get(permission='authenticated', validators=valid_token)
-def get_projects(request):
-    data = {}
-    data['projects'] = ['Project 1', 'Project 2', 'Project 3']
-    return data
+
+@view_config(context=Projects, request_method='GET', renderer='json', xhr=True)
+def list_projects(context, request):
+    r = context.retrieve()
+    print r
+    return r
+
+
+@view_config(request_method='POST', context=Projects, renderer='json', xhr=True)
+def create_city(context, request):
+    result = context.create(request.json_body)
+
+    return request.json_body
+
+
+@view_config(request_method='GET', context=Project, renderer='json', xhr=True)
+def get_city(context, request):
+    r = context.retrieve()
+
+    if r is None:
+        raise HTTPNotFound()
+    else:
+        return r

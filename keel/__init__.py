@@ -38,9 +38,9 @@ class MongoJSONRenderer:
     def __call__(self, value, system):
         request = system.get('request')
         if request is not None:
-            # set response type to json
-            request.response.content_type = 'application/json; charset=UTF-8'
-            # set csrf token if user is logged in
+        #     # set response type to json
+        #     request.response.content_type = 'application/json; charset=UTF-8'
+        #     # set csrf token if user is logged in
             if not 'X-CSRF-Token' in request.response.headers and 'system.Authenticated' in request.effective_principals:
                 request.response.headers['X-CSRF-Token'] = request.session.new_csrf_token().encode('utf-8')
         return json.dumps(value, default=json_util.default)
@@ -68,7 +68,6 @@ def main(global_config, **settings):
 
     config.add_renderer('json', MongoJSONRenderer) 
 
-    config.include('cornice')
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
     config.add_route('auth', '/auth')

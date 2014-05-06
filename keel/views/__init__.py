@@ -3,4 +3,4 @@ from pyramid.view import view_config
 
 @view_config(renderer='json', context=Root)
 def home(context, request):
-    return {'info': 'City API'}
+    return {'info': 'Project API'}

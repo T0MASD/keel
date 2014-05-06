@@ -62,19 +62,19 @@ class MongoDocument(Resource):
         self.collection.remove(self.spec)
 
 
-class City(MongoDocument):
+class Project(MongoDocument):
     
     def __init__(self, ref, parent):
         MongoDocument.__init__(self, ref, parent)
 
 
-class Cities(MongoCollection):
+class Projects(MongoCollection):
     
-    collection_name = 'cities'
-    resource_name = City
+    collection_name = 'projects'
+    resource_name = Project
 
     def __getitem__(self, ref):
-        return City(ref, self)
+        return Project(ref, self)
 
 
 class Root(Resource):
@@ -88,4 +88,4 @@ class Root(Resource):
         self.request = request
 
         Resource.__init__(self, ref='', parent=None)
-        self.add_child('cities', Cities)
+        self.add_child('projects', Projects)
