@@ -18,6 +18,7 @@ class Resource(dict):
 
 
 class MongoCollection(Resource):
+    ''' mongo db collection '''
 
     @property
     def collection(self):
@@ -25,31 +26,38 @@ class MongoCollection(Resource):
         request = root.request
         return request.db[self.collection_name]
 
+    # get all documents from the collection
     def retrieve(self):
         return [elem for elem in self.collection.find()]
 
+    # add new document to the collection
     def create(self, document):
         object_id = self.collection.insert(document)
         return self.resource_name(ref=str(object_id), parent=self)
 
 
 class MongoDocument(Resource):
+    '''' mongo document '''
 
     def __init__(self, ref, parent):
         Resource.__init__(self, ref, parent)
 
         self.collection = parent.collection
+        # document identifier
         self.spec = {'_id': ObjectId(ref)}
 
+    # Return document
     def retrieve(self):
         return self.collection.find_one(self.spec)
 
+    # Update document
     def update(self, data, patch=False):
         if patch:
             data = {'$set': data}
 
         self.collection.update(self.spec, data)
 
+    # Delete document
     def delete(self):
         self.collection.remove(self.spec)
 
