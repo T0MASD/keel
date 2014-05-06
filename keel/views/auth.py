@@ -6,11 +6,14 @@ from pyramid.session import check_csrf_token
 @view_config(route_name='login', renderer='json')
 def login(request):
     """ login view """
-    username = 'manageruser'
-    headers = remember(request, username)
-    request.response.headerlist.extend(headers)
-    request.response.headers['X-CSRF-Token'] = request.session.new_csrf_token().encode('utf-8')
-    csrf_token = request.response.headers['X-CSRF-Token']
+    if not request.authenticated_userid:
+        username = 'manageruser'
+        headers = remember(request, username)
+        request.response.headerlist.extend(headers)
+        request.response.headers['X-CSRF-Token'] = request.session.new_csrf_token().encode('utf-8')
+        csrf_token = request.response.headers['X-CSRF-Token']
+    else:
+        username = request.authenticated_userid
     return {'username':username}
 
 
