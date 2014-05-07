@@ -1,7 +1,7 @@
 from keel.resources import Projects, Project
 from pyramid.view import view_config
-
-
+from pyramid.httpexceptions import HTTPNotFound
+from pyramid.response import Response
 
 @view_config(request_method='GET', context=Projects, renderer='json')
 def list_projects(context, request):
@@ -28,3 +28,17 @@ def get_project(context, request):
         raise HTTPNotFound()
     else:
         return r
+
+
+@view_config(request_method='PUT', context=Project, renderer='json')
+def update_project(context, request):
+    context.update(request.json_body, True)
+
+    return Response(status_int=202)
+
+
+@view_config(request_method='DELETE', context=Project, renderer='json')
+def delete_project(context, request):
+    context.delete()
+
+    return Response(status_int=202)
