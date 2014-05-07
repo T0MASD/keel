@@ -46,7 +46,7 @@ def add_cors_headers_response_callback(event):
 
 def add_csrf_token_header(event):
     def csrf_token_header(request, response):
-        if not 'X-CSRF-Token' in request.response.headers and 'system.Authenticated' in request.effective_principals:
+        if not 'X-CSRF-Token' in response.headers and 'system.Authenticated' in request.effective_principals:
             response.headers.update({
                 'X-CSRF-Token':request.session.new_csrf_token().encode('utf-8')
                 })
