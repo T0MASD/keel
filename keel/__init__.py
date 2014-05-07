@@ -19,12 +19,38 @@ from pyramid.events import NewRequest
 
 def add_mongo_db(event):
     settings = event.request.registry.settings
-    url = settings['mongodb.url']
+
+    db_uri = settings['mongodb.url']
+    MongoDB = pymongo.Connection
+    conn = MongoDB(db_uri)
+    settings['mongodb_conn'] = conn
+    
     db_name = settings['mongodb.db_name']
     db_username = settings['mongodb.db_username']
     db_password = settings['mongodb.db_password']
     db = settings['mongodb_conn'][db_name]
     event.request.db = db
+
+
+def add_cors_headers_response_callback(event):
+    def cors_headers(request, response):
+        response.headers.update({
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'POST,GET,DELETE,PUT,OPTIONS',
+        'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization',
+        'Access-Control-Allow-Credentials': 'true',
+        'Access-Control-Max-Age': '1728000',
+        })
+    event.request.add_response_callback(cors_headers)
+
+
+def add_csrf_token_header(event):
+    def csrf_token_header(request, response):
+        if not 'X-CSRF-Token' in request.response.headers and 'system.Authenticated' in request.effective_principals:
+            response.headers.update({
+                'X-CSRF-Token':request.session.new_csrf_token().encode('utf-8')
+                })
+    event.request.add_response_callback(csrf_token_header)
 
 
 from pyramid.renderers import JSON
@@ -36,15 +62,10 @@ class MongoJSONRenderer:
         pass
 
     def __call__(self, value, system):
-        request = system.get('request')
-        if request is not None:
+        response = system.get('response')
+        if response is not None:
             # set response type to json
-            request.response.content_type = 'application/json; charset=UTF-8'
-            # set csrf token if user is logged in
-            if not 'X-CSRF-Token' in request.response.headers and 'system.Authenticated' in request.effective_principals:
-                request.response.headers['X-CSRF-Token'] = request.session.new_csrf_token().encode('utf-8')
-            # Add Access-Control-Allow-Origin from everything
-            request.response.headers['Access-Control-Allow-Origin'] = '*'
+            response.content_type = 'application/json; charset=UTF-8'
         return json.dumps(value, default=json_util.default)
 
 
@@ -61,13 +82,13 @@ def main(global_config, **settings):
     config.set_authentication_policy(my_authentication_policy)
     config.set_authorization_policy(my_authorization_policy)
 
-    # MongoDB
-    db_uri = settings['mongodb.url']
-    MongoDB = pymongo.Connection
-    conn = MongoDB(db_uri)
-    config.registry.settings['mongodb_conn'] = conn
+    # add mongo db
     config.add_subscriber(add_mongo_db, NewRequest)
-    
+    # add cors headers
+    config.add_subscriber(add_cors_headers_response_callback, NewRequest)
+    # add csrf token header
+    config.add_subscriber(add_csrf_token_header, NewRequest)
+
     # override default json renderer
     config.add_renderer('json', MongoJSONRenderer) 
 
