@@ -27,8 +27,8 @@ class MongoCollection(Resource):
         return request.db[self.collection_name]
 
     # get all documents from the collection
-    def retrieve(self):
-        return [elem for elem in self.collection.find()]
+    def retrieve(self, spec=None, fields=None):
+        return [elem for elem in self.collection.find(spec,fields)]
 
     # add new document to the collection
     def create(self, document):
