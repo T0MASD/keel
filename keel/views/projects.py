@@ -3,7 +3,7 @@ from pyramid.view import view_config
 
 
 
-@view_config(context=Projects, request_method='GET', renderer='json')
+@view_config(request_method='GET', context=Projects, renderer='json')
 def list_projects(context, request):
     r = context.retrieve()
 
