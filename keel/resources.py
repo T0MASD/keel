@@ -62,10 +62,26 @@ class MongoDocument(Resource):
         self.collection.remove(self.spec)
 
 
+class Member(MongoDocument):
+    
+    def __init__(self, ref, parent):
+        MongoDocument.__init__(self, ref, parent)
+
+
+class Members(MongoCollection):
+    
+    collection_name = 'members'
+    resource_name = Member
+
+    def __getitem__(self, ref):
+        return Member(ref, self)
+
+
 class Team(MongoDocument):
     
     def __init__(self, ref, parent):
         MongoDocument.__init__(self, ref, parent)
+        self.add_child('members', Members)
 
 
 class Teams(MongoCollection):
