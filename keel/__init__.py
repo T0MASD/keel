@@ -62,10 +62,10 @@ class MongoJSONRenderer:
         pass
 
     def __call__(self, value, system):
-        response = system.get('response')
-        if response is not None:
+        request = system.get('request')
+        if request is not None:
             # set response type to json
-            response.content_type = 'application/json; charset=UTF-8'
+            request.response.content_type = 'application/json; charset=UTF-8'
         return json.dumps(value, default=json_util.default)
 
 
