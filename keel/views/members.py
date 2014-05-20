@@ -24,3 +24,30 @@ def get_team_member(context, request):
             return r
         else:
             raise HTTPNotFound()
+
+
+@view_config(request_method='POST', context=Members, renderer='json')
+def add_member(context, request):
+    # parse json
+    json_body = request.json_body
+    # create team, returns Team objext
+    member = context.create(json_body)
+    # update json body to include team id
+    json_body.update(member.spec)
+    # return updated json body
+    return json_body
+
+
+@view_config(request_method='PATCH', context=Member, renderer='json')
+@view_config(request_method='PUT', context=Member, renderer='json')
+def update_member(context, request):
+    context.update(request.json_body, True)
+    json_body = request.json_body
+    return Response(status_int=202, json_body=json_body)
+
+
+@view_config(request_method='DELETE', context=Member, renderer='json')
+def delete_member(context, request):
+    context.delete()
+    
+    return Response(status_int=202) 
