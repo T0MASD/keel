@@ -7,7 +7,7 @@ from pyramid.response import Response
 @view_config(request_method='GET', context=Members, renderer='json')
 def list_team_members(context, request):
     parent_id = context.__parent__.__name__
-    r = context.retrieve(spec={"team_id":parent_id})
+    r = context.retrieve(spec={"teamId":parent_id})
     return r
 
 
@@ -20,7 +20,7 @@ def get_team_member(context, request):
     else:
         # check if member belongs to the team
         parent_id = context.__parent__.__parent__.__name__
-        if r['team_id'] == parent_id:
+        if r['teamId'] == parent_id:
             return r
         else:
             raise HTTPNotFound()

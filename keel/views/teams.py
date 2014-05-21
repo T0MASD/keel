@@ -7,7 +7,7 @@ from pyramid.response import Response
 @view_config(request_method='GET', context=Teams, renderer='json')
 def list_project_teams(context, request):
     parent_project_id = context.__parent__.__name__
-    r = context.retrieve(spec={"project_id":parent_project_id}, fields={"name":1})
+    r = context.retrieve(spec={"projectId":parent_project_id}, fields={"name":1})
     return r
 
 
@@ -20,7 +20,7 @@ def get_project_team(context, request):
     else:
         # check if team belongs to the project
         parent_project_id = context.__parent__.__parent__.__name__
-        if r['project_id'] == parent_project_id:
+        if r['projectId'] == parent_project_id:
             return r
         else:
             raise HTTPNotFound()
