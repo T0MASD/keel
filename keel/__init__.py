@@ -40,7 +40,7 @@ def add_cors_headers_response_callback(event):
         'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization',
         'Access-Control-Allow-Credentials': 'true',
         'Access-Control-Max-Age': '1728000',
-        'Access-Control-Expose-Headers': 'Content-Length'
+        'Access-Control-Expose-Headers': 'X-Toaster-Notification, X-CSRF-Token',
         })
     event.request.add_response_callback(cors_headers)
 
