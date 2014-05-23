@@ -65,4 +65,4 @@ class IntegrationTests(unittest.TestCase):
         # expect 403 when trying to log out again
         from pyramid.httpexceptions import HTTPForbidden
         response = self.app.get('/logout', expect_errors=True)
-        self.assertEqual(response.status_int, 403)
+        self.assertEqual(response.status_int, 401)

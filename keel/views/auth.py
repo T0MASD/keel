@@ -1,5 +1,5 @@
 from pyramid.security import remember, forget
-from pyramid.view import view_config
+from pyramid.view import view_config, forbidden_view_config
 from pyramid.session import check_csrf_token
 from paste.httpheaders import AUTHORIZATION
 import pyramid.httpexceptions as exc
@@ -49,13 +49,21 @@ def login(request):
     
 
 
-@view_config(route_name='logout', permission='authenticated', renderer='json')
+@view_config(route_name='logout', renderer='json')
 def logout(request):
     """ logout view """
-    username = request.authenticated_userid
-    headers = forget(request)
-    request.response.headerlist.extend(headers)
-    return {'status':'Logged out %s' % username}
+    if request.authenticated_userid:
+        username = request.authenticated_userid
+        headers = forget(request)
+        request.response.headerlist.extend(headers)
+        return {'status':'Logged out %s' % username}
+    else:
+        request.response.status = 401
+        return {
+            "toasterStatus": "warning",
+            "toasterTitle": "Warning",
+            "toasterMessage": "You are not logged in"
+            }
 
 
 @view_config(route_name='auth', renderer='string')
@@ -68,3 +76,13 @@ def auth(request):
     token = request.session.new_csrf_token()
     print 'setting new csrf_token', token
     return 'See console'
+
+
+@forbidden_view_config(renderer='json')
+def http_403_unauthenticated(request):
+    request.response.status = 403
+    return {
+        "toasterStatus": "error",
+        "toasterTitle": "Forbidden",
+        "toasterMessage": "You don't have access to this resource"
+        }
