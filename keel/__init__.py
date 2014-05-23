@@ -35,7 +35,7 @@ def add_mongo_db(event):
 def add_cors_headers_response_callback(event):
     def cors_headers(request, response):
         response.headers.update({
-        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Origin': request.environ['HTTP_ORIGIN'] if 'HTTP_ORIGIN' in request.environ else "*",
         'Access-Control-Allow-Methods': 'POST,GET,DELETE,PUT,OPTIONS,PATCH',
         'Access-Control-Allow-Headers': 'Origin, Content-Type, Accept, Authorization',
         'Access-Control-Allow-Credentials': 'true',
