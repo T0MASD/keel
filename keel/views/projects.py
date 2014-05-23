@@ -37,7 +37,7 @@ def update_project(context, request):
     return Response(status_int=202)
 
 
-@view_config(request_method='DELETE', context=Project, renderer='json')
+@view_config(request_method='DELETE', context=Project, renderer='json', permission='edit')
 def delete_project(context, request):
     context.delete()
 
