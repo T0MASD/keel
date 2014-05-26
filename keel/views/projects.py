@@ -1,4 +1,4 @@
-from keel.resources import Projects, Project, Teams, Team, Members, Member
+from keel.resources import Projects, Project
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.response import Response
