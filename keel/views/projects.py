@@ -29,8 +29,8 @@ def get_project(context, request):
     else:
         return r
 
-@view_config(request_method='PATCH', context=Project, renderer='json')
-@view_config(request_method='PUT', context=Project, renderer='json')
+@view_config(request_method='PATCH', context=Project, renderer='json', permission='authenticated')
+@view_config(request_method='PUT', context=Project, renderer='json', permission='authenticated')
 def update_project(context, request):
     context.update(request.json_body, True)
 
