@@ -31,7 +31,7 @@ def check_credentials(credentials):
         return credentials['username']
 
 
-@view_config(route_name='login', renderer='json')
+@view_config(route_name='login', renderer='json', request_method='GET')
 def login(request):
     """ login view """
     if not request.authenticated_userid:
@@ -49,7 +49,7 @@ def login(request):
     
 
 
-@view_config(route_name='logout', renderer='json')
+@view_config(route_name='logout', renderer='json', request_method='GET')
 def logout(request):
     """ logout view """
     if request.authenticated_userid:

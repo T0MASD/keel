@@ -93,6 +93,7 @@ def main(global_config, **settings):
     # override default json renderer
     config.add_renderer('json', MongoJSONRenderer) 
 
+    config.add_route('options', '/*foo', request_method='OPTIONS') # matches any path OPTIONS method
     config.add_route('login', '/login')
     config.add_route('logout', '/logout')
     config.add_route('auth', '/auth')

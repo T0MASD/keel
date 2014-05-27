@@ -6,7 +6,7 @@ def home(context, request):
     return {'info': 'Project API'}
 
 
-@view_config(request_method='OPTIONS')
+@view_config(route_name='options')
 def handle_options(request):
     ''' this is dummy reponse to OPTIONS method called by ajax, 
     request.response.headers are set in add_cors_headers_response_callback '''
