@@ -16,7 +16,12 @@ def login(request):
             request.response.headerlist.extend(headers)
             return {'username':username}
         else:
-            raise exc.HTTPUnauthorized
+            request.response.status = 401
+            return {
+                "toasterStatus": "error",
+                "toasterTitle": "Login",
+                "toasterMessage": "Failed, please check your password"
+                }            
     else:
         username = request.authenticated_userid
         return {'username':username}
