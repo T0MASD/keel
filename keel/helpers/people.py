@@ -1,6 +1,6 @@
 import requests
 
-def people_lookup(search_term):
+def people_lookup(search_term, settings):
     r = requests.get('http://api.nobelprize.org/v1/prize.json')
     people = []
     for award in r.json()['prizes']:

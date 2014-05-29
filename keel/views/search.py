@@ -16,7 +16,7 @@ def search(request):
         result = set([member['role'] for member in r])
         return list(result)
     elif request.params['resource'] == 'people' and 'query' in request.params:
-        return people_lookup(request.params['query'])
+        return people_lookup(request.params['query'], request.registry.settings)
     else:
         return []
 
