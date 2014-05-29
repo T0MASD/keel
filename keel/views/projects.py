@@ -15,9 +15,12 @@ def list_projects(context, request):
 
 @view_config(request_method='POST', context=Projects, renderer='json')
 def create_project(context, request):
-    result = context.create(request.json_body)
-
-    return request.json_body
+    # parse json
+    json_body = request.json_body
+    # create project, updates json_body including ObjectId
+    context.create(json_body)
+    # return updated json body
+    return json_body
 
 
 @view_config(request_method='GET', context=Project, renderer='json')

@@ -30,10 +30,8 @@ def get_project_team(context, request):
 def create_team(context, request):
     # parse json
     json_body = request.json_body
-    # create team, returns Team objext
-    team = context.create(json_body)
-    # update json body to include team id
-    json_body.update(team.spec)
+    # create team, updates json_body including ObjectId
+    context.create(json_body)
     # return updated json body
     return json_body
     

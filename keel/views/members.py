@@ -30,8 +30,8 @@ def get_team_member(context, request):
 def add_member(context, request):
     # parse json
     json_body = request.json_body
-    # create team, returns Team objext
-    member = context.create(json_body)
+    # create member, updates json_body including ObjectId
+    context.create(json_body)
     # add/update persons entry
     persons = Persons(ref='', parent=None)
     persons.request = request
@@ -42,9 +42,6 @@ def add_member(context, request):
     else:
         new_person = {"name":json_body['name'], "personId":json_body['personId']}
         persons.create(new_person)
-    # update json body to include team id
-    json_body.update(member.spec)
-    # return updated json body
     return json_body
 
 
