@@ -109,6 +109,21 @@ class Projects(MongoCollection):
         return Project(ref, self)
 
 
+class Person(MongoDocument):
+    
+    def __init__(self, ref, parent):
+        MongoDocument.__init__(self, ref, parent)
+
+
+class Persons(MongoCollection):
+    
+    collection_name = 'persons'
+    resource_name = Person
+
+    def __getitem__(self, ref):
+        return Person(ref, self)
+
+
 class Root(Resource):
     __acl__ = [
         (Allow, Authenticated, 'authenticated'),

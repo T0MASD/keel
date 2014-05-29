@@ -1,4 +1,4 @@
-from keel.resources import Members, Member
+from keel.resources import Members, Member, Persons
 from pyramid.view import view_config
 from pyramid.httpexceptions import HTTPNotFound
 from pyramid.response import Response
@@ -32,6 +32,16 @@ def add_member(context, request):
     json_body = request.json_body
     # create team, returns Team objext
     member = context.create(json_body)
+    # add/update persons entry
+    persons = Persons(ref='', parent=None)
+    persons.request = request
+    person = persons.retrieve(spec={"personId":json_body['personId']})
+    if person:
+        # person already in persons collection, let's skip
+        pass
+    else:
+        new_person = {"name":json_body['name'], "personId":json_body['personId']}
+        persons.create(new_person)
     # update json body to include team id
     json_body.update(member.spec)
     # return updated json body
