@@ -21,6 +21,7 @@ def get_team_member(context, request):
         # check if member belongs to the team
         parent_id = context.__parent__.__parent__.__name__
         if r['teamId'] == parent_id:
+
             return r
         else:
             raise HTTPNotFound()
@@ -48,9 +49,26 @@ def add_member(context, request):
 @view_config(request_method='PATCH', context=Member, renderer='json')
 @view_config(request_method='PUT', context=Member, renderer='json')
 def update_member(context, request):
-    context.update(request.json_body, True)
+    # parse json
     json_body = request.json_body
-    return Response(status_int=202, json_body=json_body)
+    # get assigned allocation
+    if 'allocation' not in json_body:
+        json_body['allocation'] = 0
+    else:
+        json_body['allocation'] = int(json_body['allocation'])
+    # set response headers to store X-Toaster-Notification, it will be extended in add_cors_headers_response_callback
+    headers = {}
+    # make sure total member allocations do not exceed 100%
+    current_allocations = get_member_allocations(request, json_body['personId'], json_body['teamId'])
+    while current_allocations + json_body['allocation'] > 100:
+        # reducre allocation and show warning
+        step = 10
+        json_body['allocation'] -= step
+        # set toaster notification to be displayed
+        headers.update({'X-Toaster-Notification': 'warning|Warning|Resource fully used, setting allocation to %s' % json_body['allocation']})
+    # update
+    context.update(json_body, True)
+    return Response(status_int=202, json_body=json_body, headers=headers)
 
 
 @view_config(request_method='DELETE', context=Member, renderer='json')
@@ -58,3 +76,12 @@ def delete_member(context, request):
     context.delete()
     
     return Response(status_int=202) 
+
+def get_member_allocations(request, person_id, team_id):
+    members = Members(ref='', parent=None)
+    members.request = request
+    allocations = members.retrieve(spec={"personId":person_id, "teamId": { "$ne": team_id }}, fields={"allocation":1})
+    result = sum([i['allocation'] for i in allocations if 'allocation' in i])
+    return result
+    
+
