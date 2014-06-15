@@ -14,6 +14,7 @@ def login(request):
         if username:
             headers = remember(request, username)
             request.response.headerlist.extend(headers)
+            request.session.flash('success|Login|You have logged in as %s' % username)
             return {'username':username}
         else:
             request.response.status = 401
@@ -24,6 +25,7 @@ def login(request):
                 }            
     else:
         username = request.authenticated_userid
+        request.session.flash('info|Login|You are already logged in as %s' % username)
         return {'username':username}
 
 
@@ -34,6 +36,7 @@ def logout(request):
         username = request.authenticated_userid
         headers = forget(request)
         request.response.headerlist.extend(headers)
+        request.session.flash('success|Logout|Logged out %s' % username)
         return {'status':'Logged out %s' % username}
     else:
         request.response.status = 401
