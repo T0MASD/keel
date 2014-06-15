@@ -7,7 +7,7 @@ from pyramid.response import Response
 @view_config(request_method='GET', context=Teams, renderer='json')
 def list_project_teams(context, request):
     parent_project_id = context.__parent__.__name__
-    r = context.retrieve(spec={"projectId":parent_project_id}, fields={"name":1})
+    r = context.retrieve(spec={"projectId":parent_project_id}, fields={"name":1, "size":1})
     return r
 
 
@@ -39,8 +39,9 @@ def create_team(context, request):
 @view_config(request_method='PATCH', context=Team, renderer='json')
 @view_config(request_method='PUT', context=Team, renderer='json')
 def update_team(context, request):
-    context.update(request.json_body, True)
-    json_body = {'name': request.json_body['name']}
+    # parse json
+    json_body = request.json_body
+    context.update(json_body, True)
 
     return Response(status_int=202, json_body=json_body)
 
