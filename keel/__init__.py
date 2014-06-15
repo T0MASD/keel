@@ -54,6 +54,14 @@ def add_csrf_token_header(event):
     event.request.add_response_callback(csrf_token_header)
 
 
+def add_toaster_notification_header(event):
+    def toaster_notification_header(request, response):
+        if request.session.peek_flash():
+            messages = "?".join(request.session.pop_flash())
+            response.headers.update({'X-Toaster-Notification': messages})
+    event.request.add_response_callback(toaster_notification_header)
+
+
 from pyramid.renderers import JSON
 from bson import json_util
 import json
@@ -89,6 +97,8 @@ def main(global_config, **settings):
     config.add_subscriber(add_cors_headers_response_callback, NewRequest)
     # add csrf token header
     config.add_subscriber(add_csrf_token_header, NewRequest)
+    # add toaster notification header
+    config.add_subscriber(add_toaster_notification_header, NewRequest)
 
     # override default json renderer
     config.add_renderer('json', MongoJSONRenderer) 

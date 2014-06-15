@@ -56,19 +56,19 @@ def update_member(context, request):
         json_body['allocation'] = 0
     else:
         json_body['allocation'] = int(json_body['allocation'])
-    # set response headers to store X-Toaster-Notification, it will be extended in add_cors_headers_response_callback
-    headers = {}
     # make sure total member allocations do not exceed 100%
     current_allocations = get_member_allocations(request, json_body['personId'], json_body['teamId'])
+    set_allocation = json_body['allocation']
     while current_allocations + json_body['allocation'] > 100:
         # reducre allocation and show warning
         step = 10
         json_body['allocation'] -= step
-        # set toaster notification to be displayed
-        headers.update({'X-Toaster-Notification': 'warning|Warning|Resource fully used, setting allocation to %s' % json_body['allocation']})
+    # set toaster notification        
+    if set_allocation != json_body['allocation']:
+        request.session.flash('warning|Warning|Resource fully used, setting allocation to %s' % json_body['allocation'])
     # update
     context.update(json_body, True)
-    return Response(status_int=202, json_body=json_body, headers=headers)
+    return Response(status_int=202, json_body=json_body)
 
 
 @view_config(request_method='DELETE', context=Member, renderer='json')
